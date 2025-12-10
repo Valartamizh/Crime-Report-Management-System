@@ -1,67 +1,60 @@
 package com.wipro.crms.service;
 
+import java.util.ArrayList;
 import com.wipro.crms.entity.*;
 import com.wipro.crms.util.*;
 
-import java.util.ArrayList;
-
 public class CrimeRecordService {
+	ArrayList<CrimeCase> cases;
+	ArrayList<Suspect> suspects;
+	ArrayList<InvestigationUpdate> updates;
+	
+	public void addInvestigationUpdate(InvestigationUpdate update) throws CaseNotFoundException, InvalidCrimeOperationException {
+		int flag = 0;
+		for(int i=0;i<updates.size();i++) {
+			if(update.getCaseId() == updates.get(i).getCaseId() && update.getDescription().length() > updates.get(i).getDescription().length()) {
+				flag=1;
+				break;
+			}
+			
+		}
+		if (flag == 0){
+			throw new CaseNotFoundException("Check!, There is no Existence of the Crime Case");
+		}
+	}
 
-    private ArrayList<CrimeCase> cases;
-    private ArrayList<Suspect> suspects;
-    private ArrayList<InvestigationUpdate> updates;
+	public ArrayList<Suspect> getCaseSuspects(String caseId) throws CaseNotFoundException {
+		ArrayList<Suspect> temp=new ArrayList<Suspect>();
+		for(int i=0;i<suspects.size();i++) {
+			if(caseId == cases.get(i).getCaseID()) {
+				temp.add(suspects.get(i));
+			}
+		}
+		if(temp.size()>0) return temp;
+		throw new CaseNotFoundException("Check!, There is no Existence of the Crime Case");
+	}
 
-    public CrimeRecordService() {
-        cases = new ArrayList<>();
-        suspects = new ArrayList<>();
-        updates = new ArrayList<>();
-    }
+	public ArrayList<InvestigationUpdate> getCaseUpdates(String caseId) throws CaseNotFoundException {
+		ArrayList<InvestigationUpdate> sus=new ArrayList<InvestigationUpdate>();
+		for(int i=0;i<updates.size();i++) {
+			if(caseId == updates.get(i).getCaseId()) {
+				sus.add(updates.get(i));
+			}
+		}
+		if(sus.size()>0) return sus;
+		throw new CaseNotFoundException("Check!, There is no Existence of the Crime Case");
 
-    public void addCrimeCase(CrimeCase crime) {
-        cases.add(crime);
-    }
+	}
 
-    public CrimeCase findCrimeCase(String caseId) throws CaseNotFoundException {
-        for (CrimeCase c : cases) {
-            if (c.getCaseID().equals(caseId)) return c;
-        }
-        throw new CaseNotFoundException("Case not found");
-    }
+	public String generateCaseSummary(String caseId) {
+		String summery="";
+		for(int i=0;i<updates.size();i++) {
+			if(caseId == updates.get(i).getCaseId() && caseId == cases.get(i).getCaseID()) {
+				summery += cases.get(i).toString() + " " + updates.get(i).toString() + " " + suspects.get(i).toString();
+			}
+		}
+		return summery;
 
-    public void addSuspectToCase(String caseId, Suspect s) throws Exception {
-        CrimeCase cc = findCrimeCase(caseId);
+	}
 
-        cc.addSuspect(s.getSuspectId());
-        suspects.add(s);
-    }
-
-    public void addUpdate(InvestigationUpdate u) throws Exception {
-        CrimeCase cc = findCrimeCase(u.getCaseId());
-        cc.addUpdate(u.getUpdateId());
-        updates.add(u);
-    }
-
-    public ArrayList<Suspect> getCaseSuspects(String caseId) throws CaseNotFoundException {
-        CrimeCase cc = findCrimeCase(caseId);
-        ArrayList<Suspect> result = new ArrayList<>();
-
-        for (String id : cc.getSuspetIds()) {
-            for (Suspect s : suspects) {
-                if (s.getSuspectId().equals(id)) result.add(s);
-            }
-        }
-        return result;
-    }
-
-    public ArrayList<InvestigationUpdate> getCaseUpdates(String caseId) throws CaseNotFoundException {
-        CrimeCase cc = findCrimeCase(caseId);
-        ArrayList<InvestigationUpdate> result = new ArrayList<>();
-
-        for (String id : cc.getUpdateIds()) {
-            for (InvestigationUpdate u : updates) {
-                if (u.getUpdateId().equals(id)) result.add(u);
-            }
-        }
-        return result;
-    }
 }
