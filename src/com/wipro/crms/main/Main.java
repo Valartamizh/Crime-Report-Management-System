@@ -1,9 +1,11 @@
 package com.wipro.crms.main;
 
 import java.util.ArrayList;
-import com.wipro.crms.entity.*;
+
+import com.wipro.crms.entity.CrimeCase;
+import com.wipro.crms.entity.InvestigationUpdate;
+import com.wipro.crms.entity.Suspect;
 import com.wipro.crms.service.CrimeRecordService;
-import com.wipro.crms.util.*;
 
 public class Main {
 	public static void main(String[] args) {
